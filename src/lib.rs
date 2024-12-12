@@ -9,7 +9,7 @@ use turbo::solana::{
         transaction::Transaction,
     },
 };
-
+static mut DONE:bool = false;
 //solana config
 fn init() -> bool {
     let pubkey = solana::signer();
@@ -28,6 +28,7 @@ fn init() -> bool {
 
     // 2. Send the transaction
     let did_send = solana::rpc::sign_and_send_transaction(&tx);
+    unsafe { DONE = did_send };
     return did_send;
 }
 // Define the game configuration
@@ -106,12 +107,14 @@ impl GameState {
 
 // Implement the game loop
 turbo::go!({
-    init();
+
     let mut state = GameState::load();      
     
     let gp = gamepad(0);
-
-    if !state.is_ready && state.tick >= state.enemy_spawn_rate {
+    if !state.is_ready && DONE == false {
+        DONE = init();
+    }
+    if !state.is_ready && state.tick >= state.enemy_spawn_rate && DONE == true {
         state.is_ready = true;
         state.is_jumping = true;
         state.vel_y = -3.;
