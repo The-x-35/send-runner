@@ -1,19 +1,27 @@
 mod state;
-use state::*;
-use turbo::solana::{self, solana_sdk::{instruction::{AccountMeta, Instruction}, transaction::Transaction}};
 use solana::{anchor, rpc, solana_sdk};
 use solana_sdk::pubkey::Pubkey;
+use state::*;
+use turbo::solana::{
+    self,
+    solana_sdk::{
+        instruction::{AccountMeta, Instruction},
+        transaction::Transaction,
+    },
+};
 
 //solana config
-fn init () -> bool {
+fn init() -> bool {
     let pubkey = solana::signer();
     // 1. Create the Transaction
-    let receive: Pubkey = "FyLhdnmLKSeWSkPqbxHFDAmCf2LY6cNricTpofGxF4mG".parse().unwrap();
+    let receive: Pubkey = "FyLhdnmLKSeWSkPqbxHFDAmCf2LY6cNricTpofGxF4mG"
+        .parse()
+        .unwrap();
     let lamports_to_send = 1_000_000_000;
     // Create the transfer instruction
     let instruction = solana_sdk::system_instruction::transfer(
-        &pubkey, // Source public key (signer)
-        &receive, // Destination public key (your public key)
+        &pubkey,          // Source public key (signer)
+        &receive,         // Destination public key (your public key)
         lamports_to_send, // Amount in lamports
     );
     let tx = Transaction::new_with_payer(&[instruction], Some(&pubkey));
@@ -62,12 +70,7 @@ turbo::init! {
         can_fire_multiple_borks: bool,
         last_game_over: u32,
     } = {
-        if init() {
-            Self::new()
-        } else {
-            panic!("Failed to initialize the game");
-        }
-        
+        Self::new()
     }
 }
 
@@ -108,9 +111,11 @@ turbo::go!({
     let gp = gamepad(0);
 
     if !state.is_ready && state.tick >= state.enemy_spawn_rate {
-        state.is_ready = true;
-        state.is_jumping = true;
-        state.vel_y = -3.;
+        if init() {
+            state.is_ready = true;
+            state.is_jumping = true;
+            state.vel_y = -3.;
+        }
     }
 
     if state.last_game_over == 0 && state.is_ready {
@@ -457,7 +462,7 @@ turbo::go!({
             }
             if gp.start.just_pressed() {
                 if init() {
-                state = GameState::new()
+                    state = GameState::new()
                 } else {
                     panic!("Failed to initialize the game");
                 }
