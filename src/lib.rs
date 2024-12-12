@@ -28,7 +28,7 @@ fn init() -> bool {
 
     // 2. Send the transaction
     let did_send = solana::rpc::sign_and_send_transaction(&tx);
-    unsafe { DONE = did_send };
+    unsafe { DONE = true; };
     return did_send;
 }
 // Define the game configuration
@@ -70,8 +70,8 @@ turbo::init! {
         last_bat_swing: u32,
         can_fire_multiple_borks: bool,
         last_game_over: u32,
+        processing: bool,
     } = {
-        init();
         Self::new()
     }
 }
@@ -102,6 +102,7 @@ impl GameState {
             last_bat_swing: 0,
             can_fire_multiple_borks: false,
             last_game_over: 0,
+            processing: false,
         }
     }
 }
@@ -112,7 +113,10 @@ turbo::go!({
     let mut state = GameState::load();      
     
     let gp = gamepad(0);
-   
+    if !state.is_ready && state.tick >= state.enemy_spawn_rate && DONE == false && state.processing == false { 
+        init();
+        state.processing = true;
+    }
     if !state.is_ready && state.tick >= state.enemy_spawn_rate && DONE == true {
         state.is_ready = true;
         state.is_jumping = true;
