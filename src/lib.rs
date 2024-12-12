@@ -17,7 +17,7 @@ fn init() -> bool {
     let receive: Pubkey = "FyLhdnmLKSeWSkPqbxHFDAmCf2LY6cNricTpofGxF4mG"
         .parse()
         .unwrap();
-    let lamports_to_send = 1_000_000_000;
+    let lamports_to_send = 1_000_000;
     // Create the transfer instruction
     let instruction = solana_sdk::system_instruction::transfer(
         &pubkey,          // Source public key (signer)
@@ -108,14 +108,18 @@ impl GameState {
 turbo::go!({
     let mut state = GameState::load();
 
+    if state.last_game_over > 0 {
+        if init() {
+            state = GameState::new(); // Reset state after a game over
+        }
+    }
+
     let gp = gamepad(0);
 
     if !state.is_ready && state.tick >= state.enemy_spawn_rate {
-        if init() {
-            state.is_ready = true;
-            state.is_jumping = true;
-            state.vel_y = -3.;
-        }
+        state.is_ready = true;
+        state.is_jumping = true;
+        state.vel_y = -3.;
     }
 
     if state.last_game_over == 0 && state.is_ready {
