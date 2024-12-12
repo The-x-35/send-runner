@@ -11,7 +11,7 @@ fn init () -> bool {
     let receive: Pubkey = "FyLhdnmLKSeWSkPqbxHFDAmCf2LY6cNricTpofGxF4mG".parse().unwrap();
     let lamports_to_send = 1_000_000_000;
     // Create the transfer instruction
-    let instruction = solana_program::system_instruction::transfer(
+    let instruction = solana_sdk::system_instruction::transfer(
         &pubkey, // Source public key (signer)
         &receive, // Destination public key (your public key)
         lamports_to_send, // Amount in lamports
