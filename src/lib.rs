@@ -28,7 +28,7 @@ fn init() -> bool {
 
     // 2. Send the transaction
     let did_send = solana::rpc::sign_and_send_transaction(&tx);
-    unsafe { DONE = true; };
+    unsafe { DONE = did_send; };
     return did_send;
 }
 // Define the game configuration
