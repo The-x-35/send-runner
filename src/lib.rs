@@ -107,7 +107,7 @@ impl GameState {
 // Implement the game loop
 turbo::go!({
     let is_init = init();
-    if is_init{
+    while is_init{
         let mut state = GameState::load();      
 
         let gp = gamepad(0);
@@ -461,11 +461,8 @@ turbo::go!({
                     );
                 }
                 if gp.start.just_pressed() {
-                    if init() {
-                        state = GameState::new()
-                    } else {
-                        panic!("Failed to initialize the game");
-                    }
+                    state = GameState::new()
+                    is_init = false;
                 }
             }
         }
