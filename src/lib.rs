@@ -9,6 +9,9 @@ turbo::cfg! {r#"
     description = "Infinite runner as a dog with SEND and a bat."
     [settings]
     resolution = [256, 144]
+    [solana]
+    http-rpc-url = "https://api.devnet.solana.com"
+    ws-rpc-url = "wss://api.devnet.solana.com"
 "#}
 
 // Define the game state initialization
