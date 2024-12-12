@@ -71,6 +71,7 @@ turbo::init! {
         can_fire_multiple_borks: bool,
         last_game_over: u32,
     } = {
+        init();
         Self::new()
     }
 }
@@ -111,9 +112,7 @@ turbo::go!({
     let mut state = GameState::load();      
     
     let gp = gamepad(0);
-    if !state.is_ready && DONE == false {
-        DONE = init();
-    }
+   
     if !state.is_ready && state.tick >= state.enemy_spawn_rate && DONE == true {
         state.is_ready = true;
         state.is_jumping = true;
