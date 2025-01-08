@@ -4,7 +4,7 @@ import initTurbo, * as turbo from "./pkg/turbo_genesis_impl_wasm_bindgen.js";
 /* CONFIGURATION                                  */
 /**************************************************/
 
-const APP_NAME = "SEND Runner";
+const APP_NAME = "Send Arpit Runner";
 const APP_VERSION = "1.0.0";
 const APP_AUTHOR = "Arpit";
 const APP_DESCRIPTION = "Infinite runner as a dog with SEND and a bat.";

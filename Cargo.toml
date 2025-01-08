@@ -8,6 +8,7 @@ turbo = { version = ">=0.3.8", package = "turbo-genesis-sdk", features = [
 "solana",
 ] }
 solana-program = "1.15.2" 
+dotenv = "0.15.0"
 
 [lib]
 crate-type = ["cdylib"]
