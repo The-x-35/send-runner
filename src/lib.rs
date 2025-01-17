@@ -411,22 +411,6 @@ turbo::go!({
         // Add logic to restart or exit the game
         if state.tick - state.last_game_over > 60 {
             if state.tick / 2 % 32 < 16 {
-                text!(
-                    "- press start -",
-                    x = 88,
-                    y = 84,
-                    font = Font::M,
-                    color = 0x000000aa
-                );
-                text!(
-                    "- press start -",
-                    x = 88,
-                    y = 83,
-                    font = Font::M,
-                    color = 0x000000ff
-                );
-            }
-            if gp.start.just_pressed() {
                 state = GameState::new()
             }
         }
